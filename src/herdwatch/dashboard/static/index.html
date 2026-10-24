@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HerdWatch - lameness risk dashboard</title>
+    <!--
+      Placeholder. The real server-rendered dashboard lands in milestone M4
+      (PLAN.md section 5.3) and is served by src/herdwatch/dashboard/app.py.
+
+      Shape of the finished page:
+        * cows ranked by gait abnormality score, with status chips
+          (normal | watch | pending_approval | alerted | re_inspected)
+        * per-cow score breakdown: raw value, z, ramp output, weight, contribution
+        * evidence clip playback, with the annotated overlay
+        * approve / reject / mark re-inspected buttons -> POST /approve
+    -->
+    <style>
+      body {
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        margin: 2rem;
+        color: #1a1a1a;
+      }
+      code {
+        background: #f0f0f0;
+        padding: 0.1rem 0.3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>HerdWatch</h1>
+    <p>
+      Dashboard placeholder - implemented in milestone <strong>M4</strong>. Run
+      <code>python tasks.py demo</code> (after M4) to populate it, or
+      <code>python tasks.py serve</code> to start it.
+    </p>
+  </body>
+</html>

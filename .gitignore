@@ -1,0 +1,128 @@
+# ---------------------------------------------------------------
+# HerdWatch — root .gitignore
+# Paths are relative to this file (repo root).
+# ---------------------------------------------------------------
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+sdist/
+wheels/
+*.egg-info/
+*.egg
+.installed.cfg
+
+# Virtualenvs / uv
+.venv/
+venv/
+ENV/
+env/
+.python-version
+
+# --- Test / lint / type-check caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+junit*.xml
+.hypothesis/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+
+# --- Node / Vite / React frontend ---
+node_modules/
+dist/
+dist-ssr/
+.vite/
+vite.config.*.timestamp-*
+*.local
+
+# --- Dataset (fetched at setup — NEVER redistributed per the dataset's terms) ---
+data/clips/
+data/synthetic/
+data/labels.csv
+# NOTE: data/calibration.json is intentionally NOT ignored — it holds the frozen
+# mu/sigma normalisation constants and is required for leak-free evaluation.
+
+# --- Generated artifacts (traces, evidence clips, outbox, bench output) ---
+artifacts/
+
+# --- Media: raw/evidence/demo video is far too large for git ---
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+*.wmv
+
+# --- Lambda packaging ---
+build/
+package/
+layer/
+*.zip
+
+# --- Local state (filesystem + SQLite local backend) ---
+*.db
+*.sqlite
+*.sqlite3
+moto_state/
+.moto/
+
+# --- Secrets: never commit credentials ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials
+.aws/
+.secrets/
+
+# --- OS junk ---
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Editors / IDEs ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.code-workspace
+
+# --- Agent tooling local state (permission grants + learned taste) ---
+# Delete these two lines if you want to share the agent config with judges.
+.commandcode/
+taste/
+
+# --- Logs ---
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*

@@ -1,0 +1,37 @@
+# Normalise line endings on commit; check out native per-platform.
+* text=auto eol=lf
+
+# Windows-only wrappers keep CRLF so they run from cmd.exe / PowerShell.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Pin generated lock files as text so diffs stay readable.
+uv.lock text eol=lf
+requirements.lock.txt text eol=lf
+package-lock.json text eol=lf
+
+# Binary — never diff, never touch line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.mp4 binary
+*.avi binary
+*.mov binary
+*.mkv binary
+*.webm binary
+*.wav binary
+*.so binary
+*.pyd binary
+*.dll binary
+*.zip binary
+*.db binary
+*.sqlite3 binary
+*.pt binary
+*.onnx binary
+
+# Evaluation output is generated but committed for judging — force readable diffs.
+reports/*.json text eol=lf

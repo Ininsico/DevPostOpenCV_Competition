@@ -1,0 +1,38 @@
+# =============================================================================
+# infra/template.yaml - CloudFormation stack for the HerdWatch pipeline.
+#
+# Milestone M6 (PLAN.md section 5.3). PLACEHOLDER, deliberately not written yet:
+# a half-finished stack template that has never been validated is worse than an
+# honest placeholder, and nothing here has been deployed (no AWS credentials on
+# the development machine - see PLAN.md sections 1 and 7.1).
+#
+# What M6 will define in this file:
+#
+#   AWS::S3::Bucket          herdwatch-<env>   LifecycleConfiguration 7 days,
+#                                              CORS for evidence GETs
+#   AWS::SQS::Queue          main + DLQ, redrive policy, visibility timeout
+#   AWS::Lambda::LayerVersion  opencv-python-headless 5.0.0.93, aarch64
+#   AWS::Lambda::Function    herdwatch-worker   arm64, 3008 MB, 300 s
+#   AWS::Lambda::Function    herdwatch-agent    arm64
+#   AWS::Lambda::Function    herdwatch-api      arm64 + Function URL
+#   AWS::DynamoDB::Table     herdwatch          PK=cow_key, SK=ts#kind,
+#                                              GSI1=status, GSI2=score, on-demand
+#   AWS::SNS::Topic          herdwatch-alerts, herdwatch-approvals
+#   AWS::IAM::Role           least privilege: the worker gets S3 + DynamoDB + SNS
+#                            on named resources only
+#   AWS::CloudWatch::Alarm   DLQ depth >= 1, worker errors, agent budget_exceeded
+#   AWS::Logs::LogGroup      retention 7 days
+#
+#   Outputs: FunctionUrl, AlertTopicArn, TableName, BucketName
+#
+# Every choice above sits inside AWS always-free limits. Graviton is delivered as
+# Lambda arm64 (free) rather than EC2 (billed hourly).
+#
+# Deploy:  python tasks.py deploy --dry-run     # prints the plan, creates nothing
+#          python tasks.py deploy               # needs credentials
+# =============================================================================
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "HerdWatch - placeholder until milestone M6 (see PLAN.md section 5.3)."
+
+# Resources are added in M6. Nothing is deployable from this file today, on purpose.

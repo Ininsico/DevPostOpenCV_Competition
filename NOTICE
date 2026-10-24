@@ -1,0 +1,52 @@
+HerdWatch — Dairy Cow Lameness Risk Alert System
+Copyright 2026 the HerdWatch authors
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+file except in compliance with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
+
+================================================================================
+THIRD-PARTY DATA — NOT REDISTRIBUTED, NOT COVERED BY THE LICENSE ABOVE
+================================================================================
+
+Labelled gait video
+-------------------
+Source:  fahimsohan/CattleLameness (https://github.com/fahimsohan/CattleLameness)
+Content: 50 clips — Data/Lame/L (1..25).mp4 (25) and Data/Normal/N (1..25).mp4 (25),
+         covering 42 cows, indoor and outdoor, labelled by visual gait characteristics.
+Terms:   The dataset's README states the material is for research/education only and
+         that the source videos must not be redistributed.
+
+Therefore this repository does NOT contain any dataset video. The clips are downloaded
+by `scripts/fetch_dataset.py` into `data/clips/`, which is git-ignored. A clone of this
+repository contains no third-party footage. Labels used for evaluation are derived
+locally (`data/labels.csv`, also git-ignored) and are not redistributed either.
+
+Any video, frame grab or evidence clip produced by this project for the report or demo
+is likewise excluded from version control by `.gitignore` (`*.mp4`, `*.avi`, `*.mov`,
+`*.mkv`, `*.webm`, `*.wmv`).
+
+================================================================================
+THIRD-PARTY SOFTWARE
+================================================================================
+
+- OpenCV / opencv-python-headless 5.0.0.93 — Apache-2.0 (OpenCV 4.5.0 and later; the
+  OpenCV 5.x Python package carries the same license). The competition requires OpenCV 5
+  and it is the source of all quantifiable features in this project.
+- NumPy — BSD-3-Clause.
+- FastAPI / Uvicorn — MIT / BSD-3-Clause.
+- PyYAML — MIT.
+- boto3 / botocore — Apache-2.0.
+- moto — Apache-2.0. Used only for local contract testing; no AWS account is required.
+- matplotlib — PSF-based (matplotlib license). Used only to render diagrams and tables.
+- pytest — MIT. ruff — MIT. hatchling — MIT. uv — Apache-2.0/MIT.
+
+COOL (Cloud-Optimized OpenCV Library) is referenced for context only. It is a commercial
+AWS Marketplace product sold by OpenCV, priced per Graviton4 instance-hour, and is NOT
+used, bundled or redistributed by this project. See `docs/cool_benchmark.md`.

@@ -1,0 +1,123 @@
+# =============================================================================
+# HerdWatch configuration — THE single source of truth.
+#
+# PLAN.md §6: every threshold, weight and gate lives here, with a comment naming
+# its provenance; the report quotes this table verbatim. Nothing may be
+# hard-coded in the analysis or agent modules. Values marked TODO are set during
+# the milestone named in the comment and FROZEN before evaluation runs.
+# =============================================================================
+
+paths:
+  # Relative to the repo root. Created on demand by herdwatch.config.ensure_dirs().
+  data: data
+  clips: data/clips
+  synthetic: data/synthetic
+  artifacts: artifacts
+  traces: artifacts/traces
+  evidence: artifacts/evidence
+  outbox: artifacts/outbox
+  bench: artifacts/bench
+  reports: reports
+
+video:
+  canonical_width: 960 # decode + resize, aspect preserved: CPU/accuracy trade-off
+  # OpenCV 5 returns -1 for unsupported VideoCapture properties (was 0 in 4.x),
+  # so any property read below this floor is treated as "unsupported".
+  unsupported_property_floor: 0
+
+segmentation:
+  mog2_history: 500
+  mog2_var_threshold: 24
+  mog2_detect_shadows: true # the shadow label (127) is discarded, not kept as foreground
+  kernel_width_fraction: 0.02 # morphology kernel size as a fraction of image width
+  min_blob_area_fraction: 0.0005 # specks below this fraction of frame area are dropped
+  # Instance splitting for touching cows: distance transform -> local maxima -> watershed.
+  split_min_peak_distance_fraction: 0.25 # of body length
+  split_ratio_test: 0.75 # ambiguous peak configuration -> flag multi_cow_overlap
+  # Walkway ROI polygon (normalised 0-1 coords); null = whole frame. Set per camera.
+  roi_polygon: null
+
+calibration:
+  # mu/sigma for every feature come from a FROZEN normal-clip calibration split and
+  # live in data/calibration.json so evaluation is leak-free and reproducible.
+  mu_sigma_path: data/calibration.json
+  split_seed: 12345 # TODO M2: the resulting split is recorded in calibration.json
+
+features:
+  backline:
+    fit_order: 4 # IRLS polynomial, Huber weights: suppresses head/neck discontinuity
+    huber_delta: 1.345 # 95% efficiency constant for Huber weights
+  stride:
+    min_contact_separation_fraction: 0.15 # of body length L_px
+    contact_prominence_fraction: 0.01 # of L_px
+    flow_patch_fraction: 0.06 # of L_px, dense Farneback patch at the envelope minimum
+    landing_flow_threshold: 0.5 # px/frame, |v_x| below this at the minimum = landing
+    flow_levels: 3
+  headbob:
+    head_band_fraction: 0.20 # front 20% of body length is the head/neck band
+
+gait:
+  min_cycles: 2 # need >= 2 strides before variation is measurable at all
+  min_displacement_bl: 1.5 # body lengths: separates true locomotion from shuffling
+
+score:
+  escalate_threshold: 0.60 # tuned on the calibration split, then frozen before evaluation
+  watch_band: [0.50, 0.60] # hysteresis band: stops alert flapping
+  # score = sum(w_j * a_j) / sum(w_j), with a_j = ramp(z_j; lo_j, hi_j).
+  # Weights: literature-informed prior, then validated by the ablation table (M5).
+  # TODO M2: replace the equal prior with the literature values; FROZEN before eval.
+  features:
+    arch_ratio:
+      weight: 0.25
+      ramp: [1.0, 3.0] # z-units, saturating 0 -> 1
+    sl_cv:
+      weight: 0.25
+      ramp: [1.0, 3.0]
+    s_time:
+      weight: 0.25
+      ramp: [1.0, 3.0]
+    headbob:
+      weight: 0.25
+      ramp: [1.0, 3.0]
+
+confidence:
+  min_for_auto_alert: 0.50 # below this the agent MUST request human approval
+  # Separate 0-1 confidences; any one below floor emits its reason code and the
+  # segment goes to human review instead of an alert.
+  floors:
+    segmentation: 0.50
+    visibility: 0.50
+    gait_observability: 0.50
+    identity_continuity: 0.50
+
+second_pass:
+  window_s: 5 # +/- 5 s around the first-pass window
+  fps_mult: 3 # re-extracted at 3x frame rate
+  scale: 2 # 2x upscaled tight crop
+
+agent:
+  planner: rule # rule (default, deterministic) | ollama (off by default, never required)
+  ollama:
+    model: ""
+    endpoint: http://localhost:11434
+  max_tool_calls: 12 # breach -> budget_exceeded -> human review
+  max_second_pass: 1 # per cow
+  max_wall_s: 120
+  trace_format: jsonl
+
+dashboard:
+  api_token_env: HERDWATCH_API_TOKEN # shared-secret query token (HTTP only, free tier)
+  host: 127.0.0.1
+  port: 8000
+
+aws:
+  region: us-east-1
+  table_name: herdwatch
+  s3_bucket_prefix: herdwatch
+  s3_lifecycle_days: 7 # strict expiry: the video is not worth paying to keep
+  sns_alert_topic: herdwatch-alerts
+  sns_approval_topic: herdwatch-approvals
+  lambda_memory_mb: 3008 # ~1.8 vCPU for CPU-bound CV, within free-tier GB-s
+  lambda_timeout_s: 300
+  lambda_architecture: arm64 # real AWS Graviton (Neoverse-N1), always-free
+  adapter: local # local | moto | aws — local needs no account and no spend
